@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@cycle/run": "^3.0.0",
+    "ansi-escapes": "^1.4.0",
+    "ansi-styles": "^3.0.0",
+    "xstream": "^10.3.0"
+  }
+}
