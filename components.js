@@ -1,5 +1,9 @@
 const stl = require('ansi-styles')
 const vin = require('vindicate')
+const { divide } = require('./util')
+const { createWriteStream: ws } = require('fs')
+
+const log = ws('./components.log')
 
 const default_fg = {
 	open: stl.black.close,
@@ -11,7 +15,7 @@ const default_bg = {
 	close: stl.bgBlack.close
 }
 
-const WrapText = (text, { valign = 'top', fg = default_fg, bg = default_bg } = {}) => ({ x, y, w, h }) => draw => {
+const WrapText = (text, { valign = 'top', fg = 'default', bg = 'default' } = {}) => ({ x, y, w, h }) => draw => {
 	if (w === 0 || h === 0) return
 
 	const ex = x + w
@@ -23,7 +27,7 @@ const WrapText = (text, { valign = 'top', fg = default_fg, bg = default_bg } = {
 	for (let i = 0; i < text.length; i++) {
 		draw(cx, cy, {
 			char: text[i],
-			styles: [fg, bg]
+			styles: [fg === 'default' ? default_fg : stl[fg], bg === 'default' ? default_bg : stl[bg]]
 		})
 
 		cx++
@@ -51,7 +55,7 @@ const calculate_offset = (valign, height, used) => {
 	}
 }
 
-const Text = (text, { justify = 'left', valign = 'top', fg = default_fg, bg = default_bg } = {}) => ({ x, y, w, h }) => draw => {
+const Text = (text, { justify = 'left', valign = 'top', fg = 'default', bg = 'default' } = {}) => ({ x, y, w, h }) => draw => {
 	const lines = vin.justify(text.split(/ /), w, vin[justify])
 	const len = lines.length
 	
@@ -65,7 +69,7 @@ const Text = (text, { justify = 'left', valign = 'top', fg = default_fg, bg = de
 		for (let j = 0; j < line.length; j++) {
 			draw(x + j, y + i + offset, {
 				char: line[j],
-				styles: [fg, bg]
+				styles: [fg === 'default' ? default_fg : stl[fg], bg === 'default' ? default_bg : stl[bg]]
 			})
 		}
 	}
@@ -124,48 +128,101 @@ const Box = (child, { padding = 0 } = {})  => ({ x, y, w, h }) => draw => {
 	})(draw)
 }
 
-const divide = (a, b) => {
-	const quot = a / b | 0
-	const rem = a - quot * b
-	return [quot, rem]
+const sum = xs => {
+	let s = 0
+	for (let i = 0; i < xs.length; i++) {
+		s += xs[i]
+	}
+	return s
+}
+
+const normalize_children = children => {
+	const weights = []
+	const normalized_children = []
+
+	for (let i = 0; i < children.length; i++) {
+		const c = children[i]
+
+		if (c.constructor === Array) {
+			weights.push(1 in c ? c[1] : 1)
+			normalized_children.push(c[0])
+		} else {
+			weights.push(1)
+			normalized_children.push(c)
+		}
+	}
+
+	return [weights, normalized_children]
 }
 
 const HorizontalList = children => ({ x, y, w, h }) => draw => {
 	const len = children.length
-	const [size, extra] = divide(w - 2, len)
+	if (len === 0) return
 
-	let last_left = 0
-	for (let i = 0; i < children.length; i++) {
-		const width = size + (i < extra ? 1 : 0)
+	const [weights, normalized_children] = normalize_children(children)
+	const whole = sum(weights)
+	const part = w / whole
 
-		children[i]({
-			x: x + last_left,
+	const last_i = len - 1
+
+	let progress = 0
+	for (let i = 0; i < last_i; i++) {
+		const width = weights[i] * part | 0
+		const child = normalized_children[i]
+
+		child({
+			x: x + progress,
 			y: y,
 			w: width,
 			h: h
 		})(draw)
 
-		last_left += width
+		progress += width
 	}
+
+	const last_child = normalized_children[last_i]
+
+	last_child({
+		x: x + progress,
+		y: y,
+		w: w - progress,
+		h: h
+	})(draw)
 }
 
 const VerticalList = children => ({ x, y, w, h }) => draw => {
 	const len = children.length
-	const [size, extra] = divide(h - 2, len)
+	if (len === 0) return
 
-	let last_top = 0
-	for (let i = 0; i < children.length; i++) {
-		const height = size + (i < extra ? 1 : 0)
+	const [weights, normalized_children] = normalize_children(children)
+	const whole = sum(weights)
+	const part = h / whole
 
-		children[i]({
+	const last_i = len - 1
+
+	let progress = 0
+	for (let i = 0; i < last_i; i++) {
+		const height = weights[i] * part | 0
+		const child = normalized_children[i]
+
+		child({
 			x: x,
-			y: y + last_top,
+			y: y + progress,
 			w: w,
 			h: height
 		})(draw)
 
-		last_top += height
+		progress += height
 	}
+
+	const last_child = normalized_children[last_i]
+
+	last_child({
+		x: x,
+		y: y + progress,
+		w: w,
+		h: h - progress
+	})(draw)
 }
 
 module.exports = {

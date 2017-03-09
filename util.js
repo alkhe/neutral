@@ -23,7 +23,14 @@ const render_cell = c => {
 	return open + c.char + close
 }
 
+const divide = (a, b) => {
+	const quot = a / b | 0
+	const rem = a - quot * b
+	return [quot, rem]
+}
+
 module.exports = {
 	concat,
-	render_cell
+	render_cell,
+	divide
 }
