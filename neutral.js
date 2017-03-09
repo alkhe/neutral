@@ -3,11 +3,9 @@ const cursor = require('cli-cursor')
 const xs = require('xstream').default
 const from_event = require('xstream/extra/fromEvent').default
 const sample_combine = require('xstream/extra/sampleCombine').default
-const { openSync: open, closeSync: close, createWriteStream: write_stream } = require('fs')
+const { openSync: open, closeSync: close } = require('fs')
 const tty = require('tty')
 const { concat, render_cell, divide } = require('./util')
-
-const log = write_stream('app.log')
 
 const commit_view = (v, width, buf) => {
 	v((x, y, cell) => {
@@ -91,12 +89,12 @@ const term = () => {
 		view: view$ => {
 			view$.addListener({
 				next(v) {
-					back_buffer.fill(' ')
 					commit_view(v, cols, back_buffer)
 					put(update_screen(front_buffer, back_buffer, rows, cols))
 					const temp = back_buffer
 					back_buffer = front_buffer
 					front_buffer = temp
+					back_buffer.fill(' ')
 				}
 			})
 

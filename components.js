@@ -1,19 +1,9 @@
 const stl = require('ansi-styles')
 const vin = require('vindicate')
 const { divide } = require('./util')
-const { createWriteStream: ws } = require('fs')
 
-const log = ws('./components.log')
-
-const default_fg = {
-	open: stl.black.close,
-	close: stl.black.close
-}
-
-const default_bg = {
-	open: stl.bgBlack.close,
-	close: stl.bgBlack.close
-}
+const default_fg = { open: stl.black.close, close: '' }
+const default_bg = { open: stl.bgBlack.close, close: '' }
 
 const WrapText = (text, { valign = 'top', fg = 'default', bg = 'default' } = {}) => ({ x, y, w, h }) => draw => {
 	if (w === 0 || h === 0) return
