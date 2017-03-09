@@ -3,6 +3,8 @@
     "@cycle/run": "^3.0.0",
     "ansi-escapes": "^1.4.0",
     "ansi-styles": "^3.0.0",
+    "cli-cursor": "^2.1.0",
+    "vindicate": "^0.1.0",
     "xstream": "^10.3.0"
   }
 }
