@@ -1,10 +1,9 @@
 {
   "dependencies": {
-    "@cycle/run": "^3.0.0",
     "ansi-escapes": "^1.4.0",
     "ansi-styles": "^3.0.0",
     "cli-cursor": "^2.1.0",
-    "vindicate": "^0.1.0",
+    "vindicate": "^0.1.1",
     "xstream": "^10.3.0"
   },
   "name": "neutral",
@@ -13,5 +12,8 @@
   "main": "index.js",
   "repository": "git@github.com:edge/neutral.git",
   "author": "edge <functaire@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@cycle/run": "^3.0.0"
+  }
 }

@@ -1,7 +1,10 @@
+const stl = require('ansi-styles')
 const xs = require('xstream').default
 const { run } = require('@cycle/run')
 const neutral = require('./neutral')
-const { WrapText, Text, Box, HorizontalList, VerticalList } = require('./components')
+const Text = require('./components/text')
+const Box = require('./components/box')
+const { HorizontalList, VerticalList } = require('./components/list')
 
 const term = neutral()
 const truth = `A monad is just a monoid in the category of endofunctors, what's the problem?`
@@ -17,7 +20,7 @@ run(sources => {
 		Box(Text(truth, { justify: 'right', fg: 'yellow', valign: 'center' }), { padding: 1 }),
 		Box(Text(truth, { justify: 'center', fg: 'red', valign: 'bottom' }), { padding: 1 }),
 		Box(Text(truth, { justify: 'stretch', fg: 'magenta' }), { padding: 1 }),
-		Box(WrapText(truth, { fg: 'cyan' }), { padding: 1 })
+		Box(Text(truth, { fg: 'cyan' }), { padding: 1 })
 	]
 
 	const tree = VerticalList([
