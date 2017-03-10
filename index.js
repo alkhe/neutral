@@ -1,4 +1,3 @@
-const stl = require('ansi-styles')
 const xs = require('xstream').default
 const { run } = require('@cycle/run')
 const neutral = require('./neutral')

@@ -1,10 +1,4 @@
-const sum = xs => {
-	let s = 0
-	for (let i = 0; i < xs.length; i++) {
-		s += xs[i]
-	}
-	return s
-}
+const { sum, noop2 } = require('../util')
 
 const normalize_children = children => {
 	const weights = []
@@ -25,74 +19,96 @@ const normalize_children = children => {
 	return [weights, normalized_children]
 }
 
-const HorizontalList = children => ({ x, y, w, h }) => draw => {
+const HorizontalList = children => {
 	const len = children.length
-	if (len === 0) return
+	if (len === 0) return noop2
 
 	const [weights, normalized_children] = normalize_children(children)
 	const whole = sum(weights)
-	const part = w / whole
 
 	const last_i = len - 1
 
-	let progress = 0
-	for (let i = 0; i < last_i; i++) {
-		const width = weights[i] * part | 0
-		const child = normalized_children[i]
+	return ({ x, y, w, h }) => {
+		const part = w / whole
 
-		child({
+		const child_fns = []
+
+		let progress = 0
+		for (let i = 0; i < last_i; i++) {
+			const width = weights[i] * part | 0
+			const child = normalized_children[i]
+
+			child_fns.push(child({
+				x: x + progress,
+				y: y,
+				w: width,
+				h: h
+			}))
+
+			progress += width
+		}
+
+		const last_child = normalized_children[last_i]
+
+		child_fns.push(last_child({
 			x: x + progress,
 			y: y,
-			w: width,
+			w: w - progress,
 			h: h
-		})(draw)
+		}))
 
-		progress += width
+		return draw => {
+			for (let i = 0; i < child_fns.length; i++) {
+				child_fns[i](draw)
+			}
+		}
 	}
-
-	const last_child = normalized_children[last_i]
-
-	last_child({
-		x: x + progress,
-		y: y,
-		w: w - progress,
-		h: h
-	})(draw)
 }
 
-const VerticalList = children => ({ x, y, w, h }) => draw => {
+const VerticalList = children => {
 	const len = children.length
-	if (len === 0) return
+	if (len === 0) return noop2
 
 	const [weights, normalized_children] = normalize_children(children)
 	const whole = sum(weights)
-	const part = h / whole
 
 	const last_i = len - 1
 
-	let progress = 0
-	for (let i = 0; i < last_i; i++) {
-		const height = weights[i] * part | 0
-		const child = normalized_children[i]
+	return ({ x, y, w, h }) => {
+		const part = h / whole
 
-		child({
+		const child_fns = []
+
+		let progress = 0
+		for (let i = 0; i < last_i; i++) {
+			const height = weights[i] * part | 0
+			const child = normalized_children[i]
+
+			child_fns.push(child({
+				x: x,
+				y: y + progress,
+				w: w,
+				h: height
+			}))
+
+			progress += height
+		}
+
+		const last_child = normalized_children[last_i]
+
+		child_fns.push(last_child({
 			x: x,
 			y: y + progress,
 			w: w,
-			h: height
-		})(draw)
+			h: h - progress
+		}))
 
-		progress += height
+		return draw => {
+			for (let i = 0; i < child_fns.length; i++) {
+				child_fns[i](draw)
+			}
+		}
 	}
-
-	const last_child = normalized_children[last_i]
-
-	last_child({
-		x: x,
-		y: y + progress,
-		w: w,
-		h: h - progress
-	})(draw)
 }
 
 module.exports = {

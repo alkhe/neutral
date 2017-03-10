@@ -1,10 +1,12 @@
 const esc = require('ansi-escapes')
 const cursor = require('cli-cursor')
+
 const xs = require('xstream').default
 const from_event = require('xstream/extra/fromEvent').default
-const sample_combine = require('xstream/extra/sampleCombine').default
+
 const { openSync: open, closeSync: close } = require('fs')
 const tty = require('tty')
+
 const { concat, render_cell, divide } = require('./util')
 
 const commit_view = (v, width, buf) => {

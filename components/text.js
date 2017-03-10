@@ -14,7 +14,6 @@ const calculate_offset = (valign, height, used) => {
 }
 
 const Text = (text, { justify = 'wrap', valign = 'top', fg = 'inherit', bg = 'inherit' } = {}) => {
-
 	const styles = []
 
 	if (fg === 'default') {
@@ -30,14 +29,12 @@ const Text = (text, { justify = 'wrap', valign = 'top', fg = 'inherit', bg = 'in
 	}
 
 	return ({ x, y, w, h }) => {
-
 		const lines = justify === 'wrap' ? vin.wrap(text, w) : vin.justify(text.split(/ /), w, vin[justify])
 		const len = lines.length
 		const real_y = y + calculate_offset(valign, h, len)
 		const ey = y + h
 
 		return draw => {
-
 			// while line is within bounds
 			for (let i = 0; i < lines.length && (real_y + i < ey); i++) {
 				const line = lines[i]

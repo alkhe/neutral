@@ -29,8 +29,25 @@ const divide = (a, b) => {
 	return [quot, rem]
 }
 
+const sum = xs => {
+	let s = 0
+	for (let i = 0; i < xs.length; i++) {
+		s += xs[i]
+	}
+	return s
+}
+
+const constant = k => () => k
+
+const noop = () => {}
+const noop2 = constant(noop)
+
 module.exports = {
 	concat,
 	render_cell,
-	divide
+	divide,
+	sum,
+	constant,
+	noop,
+	noop2
 }
