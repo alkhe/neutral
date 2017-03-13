@@ -57,7 +57,8 @@ const term = () => {
 
 	const keys = from_event(rs, 'data').map(ev => ({
 		type: 'key',
-		char: ev.toString()
+		char: ev.toString(),
+		code: ev[0]
 	}))
 
 	const resize = from_event(ws, 'resize').startWith().map(() => ({

@@ -29,7 +29,7 @@ const Text = (text, { justify = 'wrap', valign = 'top', fg = 'inherit', bg = 'in
 	}
 
 	return ({ x, y, w, h }) => {
-		const lines = justify === 'wrap' ? vin.wrap(text, w) : vin.justify(text.split(/ /), w, vin[justify])
+		const lines = justify === 'wrap' ? vin.wrap(text, w) : vin.justify(text.split(' '), w, vin[justify])
 		const len = lines.length
 		const real_y = y + calculate_offset(valign, h, len)
 		const ey = y + h

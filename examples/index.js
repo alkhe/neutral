@@ -1,9 +1,9 @@
 const xs = require('xstream').default
 const { run } = require('@cycle/run')
-const neutral = require('./neutral')
-const Text = require('./components/text')
-const Box = require('./components/box')
-const { HorizontalList, VerticalList } = require('./components/list')
+const neutral = require('../neutral')
+const Text = require('../components/text')
+const Box = require('../components/box')
+const { HorizontalList, VerticalList } = require('../components/list')
 
 const term = neutral()
 const truth = `A monad is just a monoid in the category of endofunctors, what's the problem?`
